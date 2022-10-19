@@ -47,7 +47,7 @@ namespace Ordering.API
                     });
                 });
             });
-            services.AddMassTransitHostedService();
+            // services.AddMassTransitHostedService(); // Not needed anymore
 
             // General Configuration
             services.AddAutoMapper(typeof(Startup));
