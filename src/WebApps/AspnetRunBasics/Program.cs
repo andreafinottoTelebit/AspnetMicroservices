@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using System;
 
 namespace AspnetRunBasics
@@ -24,7 +25,7 @@ namespace AspnetRunBasics
                             .Enrich.WithMachineName()
                             .WriteTo.Console()
                             .WriteTo.Elasticsearch(
-                                new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(
+                                new ElasticsearchSinkOptions(
                                     new Uri(context.Configuration["ElasticConfiguration:Uri"])
                                 )
                                 {
@@ -33,6 +34,7 @@ namespace AspnetRunBasics
                                     NumberOfShards = 2,
                                     NumberOfReplicas = 1
                                     // Find out what is the meaning of each of these properties
+                                    // ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "eaRD8IHdpGn6vqpdugPE")
                                 }
                             )
                             .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
