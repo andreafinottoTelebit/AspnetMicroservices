@@ -1,3 +1,4 @@
+using Common.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -17,31 +18,7 @@ namespace AspnetRunBasics
             Host
                 .CreateDefaultBuilder(args)
                 // For integrating Serilog, we are going to edit the default builder which implements the default aspnet logger
-                .UseSerilog(
-                    (context, configuration) =>
-                    {
-                        configuration
-                            .Enrich.FromLogContext()
-                            .Enrich.WithMachineName()
-                            .WriteTo.Console()
-                            .WriteTo.Elasticsearch(
-                                new ElasticsearchSinkOptions(
-                                    new Uri(context.Configuration["ElasticConfiguration:Uri"])
-                                )
-                                {
-                                    IndexFormat = $"applogs-{context.HostingEnvironment.ApplicationName?.ToLower().Replace(".", "-")}-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
-                                    AutoRegisterTemplate = true,
-                                    NumberOfShards = 2,
-                                    NumberOfReplicas = 1
-                                    // Find out what is the meaning of each of these properties
-                                    // ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "eaRD8IHdpGn6vqpdugPE")
-                                }
-                            )
-                            .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
-                            .ReadFrom.Configuration(context.Configuration)
-                            ;
-                    }
-                )
+                .UseSerilog(SeriLogger.Configure)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
